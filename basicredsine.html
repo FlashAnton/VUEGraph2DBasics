@@ -1,0 +1,128 @@
+<HTML>
+
+	<TITLE>Проверка функционирования области для рисования</TITLE>
+
+	<BODY>
+
+		<SCRIPT SRC="Vue.js"></SCRIPT>
+
+		<div id="draw">
+			Начало диапазона построения: <input v-model="startX" @change="countPoints">
+			<br>
+			Конец диапазона построения: <input v-model="endX" @change="countPoints">
+			<br>
+			Шаг построения: <input v-model="step" @change="countPoints">
+			<br>
+
+			<br>
+			<svg :width="wi" 
+				 :height="hi">
+				 
+				<line stroke="#000000"
+						x1="0" 
+						y1="250" 
+						x2="500" 
+						y2="250"/>
+						
+				<line stroke="#000000"
+						x1="250" 
+						y1="500" 
+						x2="250" 
+						y2="0"/>
+						
+				<line v-for="l in lines" 
+						stroke="#ff0000"
+						stroke-width="5"
+						:x1="l.x1" 
+						:y1="l.y1" 
+						:x2="l.x2" 
+						:y2="l.y2"/>						
+			</svg>
+			
+			<ol>
+				<li v-for="p in points">x: {{ p.x }}, y: {{ p.y }}</li>
+			</ol>
+		</div>
+		
+		<SCRIPT>	
+			var myView = new Vue(
+			{
+				el: "#draw",
+				
+				data:
+				{
+					startX: -10,
+					endX: 10,
+					step: 0.01,
+					wi: 500,
+					hi: 500,
+					points:
+					[
+					],
+					lines:
+					[
+					]
+				},
+				
+				computed:
+				{
+
+				},
+				
+				methods:
+				{
+					countPoints:function()
+					{
+						this.points = [];
+						
+						console.log(this.startX);
+						console.log(this.endX);
+						
+						for (var i = 0; i <= (Number(this.endX) - Number(this.startX)) / Number(this.step) ; i++)
+						{
+							var pt = new Object();
+							
+							pt.x = (Number(this.startX) + (Number(this.step) * i)).toFixed(5);
+							pt.y = Math.sin(pt.x).toFixed(5);
+							
+							this.points.push(pt);
+						}
+						
+						this.lines = [];
+						
+						for (var i = 0; i < this.points.length - 1 ; i++)
+						{
+							var ln = new Object();
+							
+							ln.x1 = (this.points[i].x) * 25 + this.wi / 2;
+							ln.y1 = (this.points[i].y) * 25 + this.hi / 2;
+							ln.x2 = (this.points[i + 1].x) * 25 + this.wi / 2;
+							ln.y2 = (this.points[i + 1].y) * 25 + this.hi / 2;
+							
+							this.lines.push(ln);
+						}
+					}
+				},
+				
+				created: function()
+				{
+					this.countPoints();
+				}				
+			});
+		</SCRIPT>
+
+		<STYLE TYPE="text/css">
+			svg
+			{
+				border: 1px solid #000000;
+			}
+			
+			input
+			{
+				width:60px;
+			}
+		</STYLE>
+
+	</BODY>
+
+</HTML>
